@@ -1,65 +1,13 @@
-module keyexpansion (
-    input wire [255:0] key,
-    input wire clk,
-    input wire rst,
-    output reg [127:0] out_key
+module sbox (
+    input wire [7:0] s_in,
+    output reg [7:0] sub
 );
-    reg [255:0] key_in;
-
-    reg [31:0] temp,temp2,rot,sub;
-    reg [1:0] sub_counter =2'b0;
-    reg [2:0] state,nextstate =3'b000;
-    reg [3:0] word_counter=4'b0000;
-   localparam  IDLE=3'b000 ; 
-   localparam  START=3'b001 ; 
-   localparam  EXPANSION=3'b010 ; 
-   localparam  ROT_BYTE=3'b011 ; 
-   localparam  SUB_BYTE=3'b100 ; 
-   localparam  RC_CON=3'b101 ; 
-   localparam  XOR=3'b110 ; 
-   localparam   DONE=3'b111 ; 
     
-   always @(posedge clk ) begin
-    if (rst) begin
-        state <= IDLE ;
 
-   end
-   else begin
-        state <= nextstate;
-        word_counter =word_counter+1;
-        sub_counter =sub_counter +1;
-   end
-   end
-    always @(*) begin
-     case (state)
-        IDLE:begin
-            nextstate=START;
-        end
-      START:begin 
-        key_in=key;
-        nextstate=EXPANSION;
-      end
-      EXPANSION:begin 
-        if (word_counter== 4'b0100)
-        out_key=key_in [127:0];
-        if (word_counter ==4'b1000) begin
-            out_key=key_in[255:128];
-            temp = key_in[255:224];
-            if(word_counter %8==0) begin
-                nextstate=ROT_BYTE;
-        end
-        
-      end
-      end
-      ROT_BYTE:begin
-      
-        rot ={temp[23:0],temp[31:24]};
-        nextstate=SUB_BYTE;
+always @(*) begin
+    
 
-        end
-    SUB_BYTE:begin
-        if (sub_counter <= 2'b11)begin
-        case (rot[7:0])
+case (s_in)
             8'h00: sub=8'h63;
 	   8'h01: sub=8'h7c;
 	   8'h02: sub=8'h77;
@@ -317,14 +265,6 @@ module keyexpansion (
 	   8'hfe: sub=8'hbb;
 	   8'hff: sub=8'h16;  
         endcase
-        rot =rot<<32;
-		temp2=sub
-        end
-    
-    end
-    endcase
-        end
-    
 
-    
-endmodule
+end
+        endmodule

@@ -1,0 +1,29 @@
+$date
+	Sun Jul 14 23:17:40 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module tb_sbox $end
+$var wire 8 ! sub [7:0] $end
+$var reg 8 " s_in [7:0] $end
+$scope module uut $end
+$var wire 8 # s_in [7:0] $end
+$var reg 8 $ sub [7:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+b1100111 $
+b1010 #
+b1010 "
+b1100111 !
+$end
+#10
