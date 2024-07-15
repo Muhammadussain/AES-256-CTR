@@ -5,7 +5,7 @@ module keyexpansion (
     output reg [127:0] out_key
 );
     reg [255:0] key_in;
-
+	reg [7:0] g0,g1,g2,g3;
     reg [31:0] temp,temp2,rot,sub;
     reg [1:0] sub_counter =2'b0;
     reg [2:0] state,nextstate =3'b000;
@@ -53,7 +53,12 @@ module keyexpansion (
       end
       ROT_BYTE:begin
       
-        rot ={temp[23:0],temp[31:24]};
+        // rot ={temp[23:0],temp[31:24]};
+		g0=temp[15:8];
+		g1=temp[23:16];
+		g2=temp[31:24];
+		g3=temp[7:0];
+
         nextstate=SUB_BYTE;
 
         end
