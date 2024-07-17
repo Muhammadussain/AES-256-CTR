@@ -46,7 +46,9 @@ module keyexpansion (
             out_key=key_in[255:128];
             temp = key_in[255:224];
             if(word_counter %8==0) begin
-                nextstate=ROT_BYTE;
+                // no_of_round=no_of_round+1;
+				nextstate=ROT_BYTE;
+
         end
         
       end
@@ -331,14 +333,21 @@ module keyexpansion (
 		sub_counter=sub_counter+1;
 		temp =temp<<8;
         end
-    		 
-	 nextstate=RC_CON;
+    	if(word_counter==4'hc)	 begin
+			
+		
+	  nextstate=RC_CON;
+		end
     end
 	RC_CON:begin
 		// if(round_counter ==1)
 		// round_counstant=round_constant{temp2[31:24]^8'h01:temp2[23:0]};
 		// round_counstant=round_counstant
+		 
+		//  g0 = temp2[31:24] ^ 8'h01;
 		 round_constant = {temp2[31:24] ^ 8'h01, temp2[23:0]};
+
+
 	end	
     endcase
 
