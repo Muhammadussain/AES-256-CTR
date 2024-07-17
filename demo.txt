@@ -109,4 +109,4 @@ endmodule
 
 
 iverilog -o key_expansion.out key_expansion.v key_expansion_tb.v
-vvp keyexpansion_tb.out
+vvp key_expansion.out

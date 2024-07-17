@@ -6,8 +6,8 @@ module keyexpansion (
 );
     reg [255:0] key_in;
 	reg [7:0] g0,g1,g2,g3;
-    reg [31:0] temp,temp2,rot,sub;
-    reg [1:0] sub_counter =2'b0;
+    reg [31:0] temp,temp2,rot,sub,round_constant =32'b0;
+    reg [1:0] sub_counter =2'b00;
     reg [2:0] state,nextstate =3'b000;
     reg [3:0] word_counter=4'b0000;
    localparam  IDLE=3'b000 ; 
@@ -53,16 +53,17 @@ module keyexpansion (
       end
       ROT_BYTE:begin
       
-        // rot ={temp[23:0],temp[31:24]};
-		g0=temp[15:8];
-		g1=temp[23:16];
-		g2=temp[31:24];
-		g3=temp[7:0];
+         rot ={temp[23:0],temp[31:24]};
+		// g0=temp[15:8];
+		// g1=temp[23:16];
+		// g2=temp[31:24];
+		// g3=temp[7:0];
 
         nextstate=SUB_BYTE;
 
         end
-    SUB_BYTE:begin
+       SUB_BYTE:begin
+		//  sub_counter==2'b00;
         if (sub_counter <= 2'b11)begin
         case (rot[7:0])
             8'h00: sub=8'h63;
@@ -322,13 +323,28 @@ module keyexpansion (
 	   8'hfe: sub=8'hbb;
 	   8'hff: sub=8'h16;  
         endcase
-        rot =rot<<32;
-		temp2=sub
+        rot =rot>>8;
+		//  temp2={temp2[31:8],sub[7:0]};
+		//  temp2=temp2>>8;
+		  temp2={sub[7:0],temp2[31:8]};
+		// temp2=temp<<8;
+		sub_counter=sub_counter+1;
+		temp =temp<<8;
         end
-    
+    		 
+	 nextstate=RC_CON;
     end
+	RC_CON:begin
+		// if(round_counter ==1)
+		// round_counstant=round_constant{temp2[31:24]^8'h01:temp2[23:0]};
+		// round_counstant=round_counstant
+		 round_constant = {temp2[31:24] ^ 8'h01, temp2[23:0]};
+	end	
     endcase
-        end
+
+        
+	
+		end
     
 
     
