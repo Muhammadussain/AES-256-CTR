@@ -1,29 +1,34 @@
-module keyexpansion (
+module updatedkeyexpansion (
     input wire [255:0] key,
     input wire clk,
     input wire rst,
     output reg [127:0] out_key
-);
-    reg [255:0] key_in,word;
 
-	reg [7:0] g0,g1,g2,g3;
+
+);    reg [255:0] key_in,word;
+      reg [127:0] expansion1,expansion2;
+
+    reg [7:0] g0,g1,g2,g3;
     reg [31:0] temp,temp2,rot,sub,round_constant,round_subword,word_1,word_2,word_3,word_4,word_5,word_6,word_7,word_8 =32'b0;
     reg [1:0] sub_counter,second_subcounter =2'b00;
     reg [4:0] state,nextstate =5'b00000;
     reg [3:0] word_counter=4'b0000;
 	reg [3:0] rounds_counter=4'b0000;
-   localparam  IDLE=5'b00001 ;
-   localparam  START=5'b00010 ;
-   localparam  EXPANSION=5'b00011 ;
-   localparam  ROT_BYTE=5'b00100 ;
-   localparam  SUB_BYTE=5'b00101 ;
-   localparam  RC_CON=5'b00110 ;
-   localparam  XOR=5'b00111 ;
-   localparam ROUND_1 =5'b01000 ;
-   localparam ROUND_2 =5'b01001 ;
-   localparam   DONE=5'b01010 ;
+   localparam  IDLE=4'b0001 ;
+   localparam  START=4'b0010 ;
+   localparam  EXPANSION_1=4'b0011 ;
+   localparam  EXPANSION_2=4'b0100 ;
+   localparam  EXPANSION_3=4'b0101 ;
+   localparam  EXPANSION_4=4'b0110 ;
+   localparam  ROT_BYTE=4'b0111 ;
+   localparam  SUB_BYTE=4'b1000 ;
+   localparam  RC_CON=4'b1001 ;
+   localparam  XOR=4'b1010 ;
+//    localparam ROUND_1 =5'b01000 ;
+//    localparam ROUND_2 =5'b01001 ;
+//    localparam   DONE=4'b1010 ;
 
-   always @(posedge clk ) begin
+ always @(posedge clk ) begin
     if (rst) begin
         state <= IDLE ;
 
@@ -31,45 +36,40 @@ module keyexpansion (
    else begin
         state <= nextstate;
         word_counter =word_counter+1;
-        sub_counter =sub_counter +1;
+        sub_counter =sub_counter+1;
    end
    end
-    always @(*) begin
+      always @(*) begin
+         temp =expansion2[256:224];
 		second_subcounter=sub_counter;
      case (state)
         IDLE:begin
-			 second_subcounter=2'b0;
             nextstate=START;
 
         end
       START:begin
-		if (rounds_counter==1'b0) begin
-			key_in=key;
-		end
-        
-        nextstate=EXPANSION;
-      end
-      EXPANSION:begin
-
-        if (word_counter== 4'b0100)
-        out_key=key_in [127:0];
-        if (word_counter ==4'b1000) begin
-            out_key=key_in[255:128];
-            temp = key_in[255:224];
-            if(word_counter %8==0) begin
-             rounds_counter=rounds_counter+4'b1;
-				nextstate=ROT_BYTE;
 		
-			end
-		// if(rounds_counter)begin
-		// 	nextstate=ROUND_1;
-		// end
+			key_in=key;
+        
+        nextstate=EXPANSION_1;
 
       end
+      EXPANSION_1:begin
+      if (rounds_counter==1'b0) begin
+        expansion1=key_in[127:0];
 
       end
-      ROT_BYTE:begin
-
+      nextstate=EXPANSION_2;
+      end
+      EXPANSION_2:begin
+        if(rounds_counter==1'b0)begin
+          expansion2=key_in[256:128];
+        end
+        // temp =expansion2[256:224];
+     nextstate=ROT_BYTE;
+      end
+       ROT_BYTE:begin
+        // temp =expansion2[256:224];
        sub_counter =2'b00;
          rot ={temp[23:0],temp[31:24]};
         nextstate=SUB_BYTE;
@@ -182,8 +182,7 @@ module keyexpansion (
 	   8'h63: sub=8'hfb;
 	   8'h64: sub=8'h43;
 	   8'h65: sub=8'h4d;
-
-	   8'h66: sub=8'h33;
+     8'h66: sub=8'h33;
 	   8'h67: sub=8'h85;
 	   8'h68: sub=8'h45;
 	   8'h69: sub=8'hf9;
@@ -352,53 +351,34 @@ module keyexpansion (
 
 		 round_constant = {temp2[31:24] ^ 8'h01, temp2[23:0]};
 
-		                //   rounds_counter=rounds_counter+4'b1;
-						  nextstate=ROUND_1;
-
+      nextstate=EXPANSION_3;
 	end
 
 
-	ROUND_1:begin
-		// word_counter=4'b0;
-		if(rounds_counter==1'b1)begin
-
-		word=key_in;
-
-		end
-		word_1=round_constant^word[31:0];
-		// word_counter=word_counter+1;
-		word_2=word_1^word[63:32];
-				// word_counter=word_counter+1;
-
-		word_3=word_2^word[95:64];
-				// word_counter=word_counter+1;
-
-		word_4=word_3^word[127:96];
-				// word_counter=word_counter+1;
-
-		if(word_counter%8==4)begin
-			sub_counter=4'b0;
-			temp=word_4;
-			nextstate=SUB_BYTE;
-		
-		end
-		word_5=temp2^word[159:128];
-				// word_counter=word_counter+1;
-
-		word_6=word_5^word[191:160];
-				// word_counter=word_counter+1;
-
-		word_7=word_6^word[223:192];
-				// word_counter=word_counter+1;
-
-		word_8=word_7^word[255:224];
-				// word_counter=word_counter+1;
+        endcase
+      end
 
 
 
-		end
-		endcase
-	end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 endmodule

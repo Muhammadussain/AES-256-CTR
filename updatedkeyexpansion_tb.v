@@ -1,4 +1,4 @@
-module tb_keyexpansion;
+module updatedkeyexpansion_tb;
 
     // Testbench signals
     reg clk;
@@ -7,7 +7,7 @@ module tb_keyexpansion;
     wire [127:0] out_key;
 
     // Instantiate the keyexpansion module
-    keyexpansion uut (
+    updatedkeyexpansion uut (
         .key(key),
         .clk(clk),
         .rst(rst),
@@ -43,8 +43,11 @@ module tb_keyexpansion;
 
     // Waveform dump
     initial begin
-        $dumpfile("keyexpansion.vcd");
-        $dumpvars(0, tb_keyexpansion);
+        $dumpfile("updatedkeyexpansion.vcd");
+        $dumpvars(0,updatedkeyexpansion_tb);
     end
 
-endmodule
+ endmodule
+// iverilog -o updatedkeyexpansion.out updatedkeyexpansion.v updatedkeyexpansion_tb.v
+// vvp updatedkeyexpansion.out
+// gtkwave updatedkeyexpansion.vcd
