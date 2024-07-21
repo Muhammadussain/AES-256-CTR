@@ -6,14 +6,14 @@ module updatedkeyexpansion (
 
 
 );    reg [255:0] key_in,word;
-      reg [127:0] expansion1,expansion2;
+      reg [127:0] expansion1,expansion2,expansion3,expansion4;
 
     reg [7:0] g0,g1,g2,g3;
     reg [31:0] temp,temp2,rot,sub,round_constant,round_subword,word_1,word_2,word_3,word_4,word_5,word_6,word_7,word_8 =32'b0;
     reg [1:0] sub_counter,second_subcounter =2'b00;
     reg [4:0] state,nextstate =5'b00000;
-    reg [3:0] word_counter=4'b0000;
-	reg [3:0] rounds_counter=4'b0000;
+    reg [3:0] word_counter,secword_counter,sub_roundcounter=4'b0000;
+	  reg [3:0] rounds_counter=4'b0000;
    localparam  IDLE=4'b0001 ;
    localparam  START=4'b0010 ;
    localparam  EXPANSION_1=4'b0011 ;
@@ -28,19 +28,21 @@ module updatedkeyexpansion (
 //    localparam ROUND_2 =5'b01001 ;
 //    localparam   DONE=4'b1010 ;
 
- always @(posedge clk ) begin
-    if (rst) begin
-        state <= IDLE ;
-
-   end
-   else begin
-        state <= nextstate;
-        word_counter =word_counter+1;
-        sub_counter =sub_counter+1;
-   end
-   end
+always @(posedge clk) begin
+        if (rst) begin
+            state <= IDLE;
+            word_counter <= 4'b0000;
+            secword_counter <= 4'b0000;
+            sub_counter <= 2'b00;
+        end else begin
+            state <= nextstate;
+            word_counter <= word_counter + 1;
+            sub_counter <= sub_counter + 1;
+            secword_counter <= secword_counter + 1;
+        end
+    end
       always @(*) begin
-         temp =expansion2[256:224];
+        
 		second_subcounter=sub_counter;
      case (state)
         IDLE:begin
@@ -59,17 +61,19 @@ module updatedkeyexpansion (
         expansion1=key_in[127:0];
 
       end
+	   sub_roundcounter=sub_roundcounter+1;
       nextstate=EXPANSION_2;
       end
       EXPANSION_2:begin
         if(rounds_counter==1'b0)begin
           expansion2=key_in[256:128];
+          temp =expansion2[127:96];
         end
-        // temp =expansion2[256:224];
+           sub_roundcounter=sub_roundcounter+1;
      nextstate=ROT_BYTE;
       end
        ROT_BYTE:begin
-        // temp =expansion2[256:224];
+       
        sub_counter =2'b00;
          rot ={temp[23:0],temp[31:24]};
         nextstate=SUB_BYTE;
@@ -182,7 +186,7 @@ module updatedkeyexpansion (
 	   8'h63: sub=8'hfb;
 	   8'h64: sub=8'h43;
 	   8'h65: sub=8'h4d;
-     8'h66: sub=8'h33;
+       8'h66: sub=8'h33;
 	   8'h67: sub=8'h85;
 	   8'h68: sub=8'h45;
 	   8'h69: sub=8'hf9;
@@ -341,7 +345,7 @@ module updatedkeyexpansion (
 		temp2={sub[7:0],temp2[31:8]};
 		temp =temp<<8;
 		 end
-    	if(word_counter==4'hc)	 begin
+    	if(second_subcounter==2'b10)	 begin
 
 
 	  nextstate=RC_CON;
@@ -353,8 +357,15 @@ module updatedkeyexpansion (
 
       nextstate=EXPANSION_3;
 	end
-
-
+	EXPANSION_3:begin
+	expansion3[31:0]=expansion1[31:0]^round_constant;
+	expansion3[63:32]=expansion1[63:32]^expansion3[31:0];
+	expansion3[95:64]=expansion1[95:64]^expansion3[63:32];
+	expansion3[127:96]=expansion1[127:96]^expansion3[95:64];
+	
+	nextstate=EXPANSION_4;
+	end
+	 
         endcase
       end
 
