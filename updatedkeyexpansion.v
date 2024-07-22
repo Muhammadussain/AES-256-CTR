@@ -5,15 +5,15 @@ module updatedkeyexpansion (
     output reg [127:0] out_key
 
 
-);    reg [255:0] key_in,word;
-      reg [127:0] expansion1,expansion2,expansion3,expansion4;
-
-    reg [7:0] g0,g1,g2,g3;
+);  reg [255:0] key_in,word;
+    reg [127:0] expansion1,expansion2,expansion3,expansion4;
+	reg expansion3_enable;
     reg [31:0] temp,temp2,rot,sub,round_constant,round_subword,word_1,word_2,word_3,word_4,word_5,word_6,word_7,word_8 =32'b0;
     reg [1:0] sub_counter,second_subcounter =2'b00;
-    reg [4:0] state,nextstate =5'b00000;
-    reg [3:0] word_counter,secword_counter,sub_roundcounter=4'b0000;
-	  reg [3:0] rounds_counter=4'b0000;
+    reg [4:0] state,nextstate =4'b0000;
+    reg [3:0] word_counter,sub_roundcounter=4'b0000;
+	reg [3:0] rounds_counter=4'b0000;
+
    localparam  IDLE=4'b0001 ;
    localparam  START=4'b0010 ;
    localparam  EXPANSION_1=4'b0011 ;
@@ -24,21 +24,20 @@ module updatedkeyexpansion (
    localparam  SUB_BYTE=4'b1000 ;
    localparam  RC_CON=4'b1001 ;
    localparam  XOR=4'b1010 ;
-//    localparam ROUND_1 =5'b01000 ;
-//    localparam ROUND_2 =5'b01001 ;
-//    localparam   DONE=4'b1010 ;
+
 
 always @(posedge clk) begin
         if (rst) begin
             state <= IDLE;
             word_counter <= 4'b0000;
-            secword_counter <= 4'b0000;
+            // secword_counter <= 4'b0000;
             sub_counter <= 2'b00;
-        end else begin
+        end 
+		else begin
             state <= nextstate;
             word_counter <= word_counter + 1;
             sub_counter <= sub_counter + 1;
-            secword_counter <= secword_counter + 1;
+            // secword_counter <= secword_counter + 1;
         end
     end
       always @(*) begin
@@ -84,7 +83,7 @@ always @(posedge clk) begin
          if (second_subcounter <= 2'b11)begin
 
         case (rot[7:0])
-            8'h00: sub=8'h63;
+         8'h00: sub=8'h63;
 	   8'h01: sub=8'h7c;
 	   8'h02: sub=8'h77;
 	   8'h03: sub=8'h7b;
@@ -345,14 +344,18 @@ always @(posedge clk) begin
 		temp2={sub[7:0],temp2[31:8]};
 		temp =temp<<8;
 		 end
-    	if(second_subcounter==2'b10)	 begin
-
-
-	  nextstate=RC_CON;
+    		
+			if (word_counter==4'he) begin
+				nextstate=EXPANSION_4;
+			end
+		 else begin
+		if(word_counter==4'h8 ||secon)begin	
+	      nextstate=RC_CON;
 		end
-    end
+		end
+	   end
 	RC_CON:begin
-
+		
 		 round_constant = {temp2[31:24] ^ 8'h01, temp2[23:0]};
 
       nextstate=EXPANSION_3;
@@ -363,9 +366,31 @@ always @(posedge clk) begin
 	expansion3[95:64]=expansion1[95:64]^expansion3[63:32];
 	expansion3[127:96]=expansion1[127:96]^expansion3[95:64];
 	
-	nextstate=EXPANSION_4;
+	sub_roundcounter=sub_roundcounter+1;
+	rot=expansion3[127:96];
+	//  expansion3_enable=1'b1;
+	sub_counter=2'b00;
+	second_subcounter=sub_counter;
+	if(second_subcounter <= 2'b11)begin
+	
+	expansion3_enable=1'b0;
 	end
-	 
+	nextstate=SUB_BYTE;
+	end
+	EXPANSION_4:begin
+		expansion3_enable=1'b1;
+		expansion4[31:0]=expansion2[31:0]^temp2;
+	expansion4[63:32]=expansion2[63:32]^expansion4[31:0];
+	expansion4[95:64]=expansion2[95:64]^expansion4[63:32];
+	expansion4[127:96]=expansion2[127:96]^expansion4[95:64];
+	sub_roundcounter=sub_roundcounter+1;
+	if(sub_roundcounter==4'd4) begin
+		rounds_counter=rounds_counter+1;
+	end
+	temp=expansion4[127:96];
+	nextstate=ROT_BYTE;
+	end
+	
         endcase
       end
 
