@@ -71,8 +71,19 @@ always @(*) begin
                 second_subcounter=2'h0;
 				nextstate =SUB_BYTE;
             end
+             if(sub_roundcounter == 4'h9) begin
+                 expansion1[31:0]   = round7_result[31:0] ^ temp2;
+                 expansion1[63:32]  = round7_result[63:32] ^ expansion1[31:0];
+                 expansion1[95:64]  = round7_result[95:64] ^ expansion1[63:32];
+                 expansion1[127:96] = round7_result[127:96] ^ expansion1[95:64];
+				round9_result=expansion1;
+				rot = round9_result[127:96];
+                second_subcounter=2'h0;
+				nextstate =SUB_BYTE;
+            end
 			end
 		end
+        
 		EXPANSION_2: begin 	
 			sub_roundcounter=sub_roundcounter+1;
             if (sub_roundcounter == 4'h2) begin
@@ -89,6 +100,15 @@ always @(*) begin
                 expansion2[127:96] = round4_result[127:96] ^ expansion2[95:64];
 				round6_result=expansion2;
                 temp=round6_result[127:96];
+            end
+            if(sub_roundcounter==4'hA)begin
+
+                 expansion2[31:0]   = round8_result[31:0] ^ temp2;
+                expansion2[63:32]  = round8_result[63:32] ^ expansion2[31:0];
+                expansion2[95:64]  = round8_result[95:64] ^ expansion2[63:32];
+                expansion2[127:96] = round8_result[127:96] ^ expansion2[95:64];
+				round10_result=expansion2;
+                temp=round10_result[127:96];
             end
 
             nextstate = ROT_BYTE;
@@ -192,11 +212,24 @@ always @(*) begin
 	 if (word_counter == 4'h0 && rounds_counter == 4'h1) begin
 			 nextstate=RC_CON;
 		end
-    if(word_counter ==4'h6 && rounds_counter ==4'h1 && sub_roundcounter==4'h7)
+    if(word_counter ==4'h6 && rounds_counter ==4'h1 && sub_roundcounter==4'h7)begin
+            nextstate=EXPANSION_4;
+ end
+    if(word_counter ==4'hc && rounds_counter ==4'h2 && sub_roundcounter==4'h8)begin
+            nextstate=EXPANSION_1;
+ end
+    if(word_counter ==4'h1 && rounds_counter ==4'h2 && sub_roundcounter==4'h9)begin
+            nextstate=EXPANSION_2;
+ end
+ 
+    if(word_counter ==4'h7 && rounds_counter ==4'h2 && sub_roundcounter==4'ha)begin
+            nextstate=RC_CON;
+ end
+    if(word_counter ==4'hD && rounds_counter ==4'h2 && sub_roundcounter==4'hB)begin
             nextstate=EXPANSION_4;
  end
  
-	   
+       end  
 		RC_CON: begin
    		 case (rounds_counter)
         4'b0000: round_constant = {temp2[31:24] ^ 8'h01, temp2[23:0]};
@@ -234,6 +267,10 @@ end
     if (sub_roundcounter==4'h7) begin
         round7_result=expansion3;
     end
+    if (sub_roundcounter==4'hB) begin
+        round11_result=expansion3;
+    end
+
  
 		nextstate = SUB_BYTE;
 		
@@ -253,9 +290,12 @@ end
     if (rounds_counter==1'b1) begin
         round8_result =expansion4;
     end
+    if (rounds_counter==4'h2) begin
+        round12_result =expansion4;
+    end
 
 
-    if (sub_roundcounter == 4'h4 ||sub_roundcounter ==4'h8) begin
+    if (sub_roundcounter == 4'h4 ||sub_roundcounter ==4'h8||sub_roundcounter==4'hc) begin
         rounds_counter = rounds_counter + 1;
     end
 
