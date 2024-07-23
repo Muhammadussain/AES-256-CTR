@@ -81,8 +81,18 @@ always @(*) begin
                 round2_result = expansion2;
             end
 
-            
+            if(sub_roundcounter==4'h6)begin
+
+                 expansion2[31:0]   = round4_result[31:0] ^ temp2;
+                expansion2[63:32]  = round4_result[63:32] ^ expansion2[31:0];
+                expansion2[95:64]  = round4_result[95:64] ^ expansion2[63:32];
+                expansion2[127:96] = round4_result[127:96] ^ expansion2[95:64];
+				round6_result=expansion2;
+                temp=round6_result[127:96];
+            end
+
             nextstate = ROT_BYTE;
+
         end
 
         ROT_BYTE: begin
@@ -172,14 +182,18 @@ always @(*) begin
     if (word_counter == 4'h8 && sub_roundcounter ==4'h2 && rounds_counter==4'h0) begin
         nextstate = RC_CON;
     end
-    if (word_counter == 4'h4 && rounds_counter == 4'h1) begin
+    if (word_counter == 4'h4 && rounds_counter == 4'h1 &&sub_roundcounter==4'h4) begin
 			 nextstate=RC_CON;
 		end
 	 if (word_counter == 4'ha && rounds_counter == 4'h1) begin
 			 nextstate=EXPANSION_2;
 		end
-
-
+		
+	 if (word_counter == 4'h0 && rounds_counter == 4'h1) begin
+			 nextstate=RC_CON;
+		end
+    if(word_counter ==4'h6 && rounds_counter ==4'h1 && sub_roundcounter==4'h7)
+            nextstate=EXPANSION_4;
  end
  
 	   
@@ -217,6 +231,9 @@ end
 	   if (sub_roundcounter ==4'h3) begin
         round3_result = expansion3;
     end
+    if (sub_roundcounter==4'h7) begin
+        round7_result=expansion3;
+    end
  
 		nextstate = SUB_BYTE;
 		
@@ -233,9 +250,12 @@ end
     if (rounds_counter == 1'b0) begin
         round4_result = expansion4;
     end
+    if (rounds_counter==1'b1) begin
+        round8_result =expansion4;
+    end
 
 
-    if (sub_roundcounter == 4'h4) begin
+    if (sub_roundcounter == 4'h4 ||sub_roundcounter ==4'h8) begin
         rounds_counter = rounds_counter + 1;
     end
 
