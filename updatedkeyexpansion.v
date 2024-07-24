@@ -6,7 +6,7 @@ module updatedkeyexpansion (
 
 
 );  reg [255:0] key_in,word;
-    reg [127:0] expansion1,expansion2,expansion3,expansion4,round1_result,round2_result,round3_result,round4_result,round5_result,round6_result,round7_result,round8_result,round9_result,round10_result,round11_result,round12_result,round13_result,round14_result,round15_result;
+    reg [127:0] expansion1,expansion2,expansion3,expansion4,round1_result,round2_result,round3_result,round4_result,round5_result,round6_result,round7_result,round8_result,round9_result,round10_result,round11_result,round12_result,round13_result,round14_result,round15_result=128'h0;
 	reg expansion3_enable,expansion4_enable;
     reg [31:0] temp,temp2,rot,sub,round_constant=32'b0;
     reg [1:0] sub_counter,second_subcounter =2'b00;
@@ -31,7 +31,6 @@ always @(posedge clk) begin
         if (rst) begin
             state <= IDLE;
             word_counter <= 4'b0000;
-            
             sub_counter <= 2'b00;
         end 
 		else begin
@@ -58,6 +57,7 @@ always @(*) begin
             if (rounds_counter == 1'h0) begin
                 expansion1 = key_in[127:0];
                 round1_result = expansion1;
+                out_key =round1_result;
 				nextstate=EXPANSION_2;
             end 
 		
@@ -101,6 +101,7 @@ always @(*) begin
                 expansion2 = key_in[256:128];
                 temp = expansion2[127:96];
                 round2_result = expansion2;
+                out_key=round2_result;
             end
 
             if(sub_roundcounter==4'h6)begin
@@ -215,62 +216,65 @@ always @(*) begin
         temp = temp << 8;
     
 
- 
-    if (word_counter == 4'he && rounds_counter ==4'h0) begin
-        nextstate = EXPANSION_4;
-    end 
     if (word_counter == 4'h8 && sub_roundcounter ==4'h2 && rounds_counter==4'h0) begin
         nextstate = RC_CON;
     end
+    if (word_counter == 4'he && rounds_counter ==4'h0 && sub_roundcounter==4'h3) begin
+        nextstate = EXPANSION_4;
+    end 
     if (word_counter == 4'h4 && rounds_counter == 4'h1 &&sub_roundcounter==4'h4) begin
+			  nextstate=RC_CON;
+			//   nextstate=EXPANSION_1;
+		end
+     if (word_counter == 4'ha && rounds_counter == 4'h1 && sub_roundcounter==4'h5) begin
+			//  nextstate=EXPANSION_2;
+			  nextstate=EXPANSION_2;
+		end
+		//PASS TILL HERE WORD20
+	 if (word_counter == 4'h0 && rounds_counter == 4'h1 && sub_roundcounter==4'h6) begin
 			 nextstate=RC_CON;
 		end
-	 if (word_counter == 4'ha && rounds_counter == 4'h1) begin
-			 nextstate=EXPANSION_2;
-		end
-		
-	 if (word_counter == 4'h0 && rounds_counter == 4'h1) begin
-			 nextstate=RC_CON;
-		end
+        //PASS TILL HERE WORD24
     if(word_counter ==4'h6 && rounds_counter ==4'h1 && sub_roundcounter==4'h7)begin
             nextstate=EXPANSION_4;
- end
+ end//PASS TILL HERE WORD28
+
     if(word_counter ==4'hc && rounds_counter ==4'h2 && sub_roundcounter==4'h8)begin
-            nextstate=EXPANSION_1;
- end
+            nextstate=RC_CON;
+ end//PASS TILL HERE WORD32
     if(word_counter ==4'h1 && rounds_counter ==4'h2 && sub_roundcounter==4'h9)begin
             nextstate=EXPANSION_2;
- end
+ end//PASS TILL HERE WORD36
  
     if(word_counter ==4'h7 && rounds_counter ==4'h2 && sub_roundcounter==4'ha)begin
             nextstate=RC_CON;
- end
+ end//PASS TILL HERE WORD40
     if(word_counter ==4'hD && rounds_counter ==4'h2 && sub_roundcounter==4'hB)begin
             nextstate=EXPANSION_4;
- end
- if(word_counter ==4'h3 && rounds_counter ==4'h3 && sub_roundcounter==4'hC)begin
-            nextstate=EXPANSION_1;
- end
+ end//PASS TILL HERE WORD44
  if(word_counter ==4'h3 && rounds_counter ==4'h3 && sub_roundcounter==4'hC)begin
             nextstate=RC_CON;
- end
+ end//PASS TILL HERE WORD48
  if(word_counter ==4'h9 && rounds_counter ==4'h3 && sub_roundcounter==4'hD)begin
             nextstate=EXPANSION_2;
- end
+ end//PASS TILL HERE WORD52
  if(word_counter ==4'hF && rounds_counter ==4'h3 && sub_roundcounter==4'hE)begin
             nextstate=RC_CON;
  end
+//  if(word_counter ==4'hF && rounds_counter ==4'h3 && sub_roundcounter==4'hE)begin
+//             nextstate=RC_CON;
+//  end
  
        end  
 		RC_CON: begin
-   		 case (rounds_counter)
-        4'b0000: round_constant = {temp2[31:24] ^ 8'h01, temp2[23:0]};
-        4'b0001: round_constant = {temp2[31:24] ^ 8'h02, temp2[23:0]};
-        4'b0010: round_constant = {temp2[31:24] ^ 8'h04, temp2[23:0]};
-        4'b0011: round_constant = {temp2[31:24] ^ 8'h08, temp2[23:0]};
-        4'b0100: round_constant = {temp2[31:24] ^ 8'h10, temp2[23:0]};
-        4'b0101: round_constant = {temp2[31:24] ^ 8'h20, temp2[23:0]};
-        4'b0110: round_constant = {temp2[31:24] ^ 8'h40, temp2[23:0]};
+   		 case (sub_roundcounter)
+        4'h2: round_constant = {temp2[31:24] ^ 8'h01, temp2[23:0]};
+        4'h4: round_constant = {temp2[31:24] ^ 8'h02, temp2[23:0]};
+        4'h6: round_constant = {temp2[31:24] ^ 8'h04, temp2[23:0]};
+        4'h8: round_constant = {temp2[31:24] ^ 8'h08, temp2[23:0]};
+        4'hA: round_constant = {temp2[31:24] ^ 8'h10, temp2[23:0]};
+        4'hC: round_constant = {temp2[31:24] ^ 8'h20, temp2[23:0]};
+        4'hE: round_constant = {temp2[31:24] ^ 8'h40, temp2[23:0]};
        
     endcase
 
@@ -293,7 +297,7 @@ end
     sub_counter = 2'b00;
  
     
-	   if (sub_roundcounter ==4'h3) begin
+	if (sub_roundcounter ==4'h3) begin
         round3_result = expansion3;
     end
     if (sub_roundcounter==4'h7) begin
