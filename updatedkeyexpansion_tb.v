@@ -34,7 +34,7 @@ module updatedkeyexpansion_tb;
         // rst = 1;
 
         // Apply test vectors
-        #700; // Run simulation for some time
+        #1000; // Run simulation for some time
 
         // End simulation
         $finish;
