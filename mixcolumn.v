@@ -71,34 +71,7 @@ module mixcolumn (
      temp3 [23:16] =COLUMN_2[23:16] ;
      temp3[31:24] =(COLUMN_2[31]?(COLUMN_2[31:24] <<1'h1) ^8'h1B:COLUMN_2[31:24] <<1);
      NEW_COLUMN_2[31:24] =temp3[31:24]^temp3[23:16]^temp3[15:8]^temp3[7:0];
-    //  temp3[7:0]=(COLUMN_2[7]?(COLUMN_2[7:0]<<1'h1) ^8'h1B:COLUMN_2[7:0]<<1);
-    //  temp4 = (COLUMN_2[15] ? ((COLUMN_2[15:8] << 1) ^ 8'h1B) : (COLUMN_2[15:8] << 1));
-    //  temp3[15:8] = temp4 ^ COLUMN_2[15:8];
-    //  temp3 [23:16]=COLUMN_2[23:16];
-    //  temp3 [31:24]=COLUMN_2[31:24];
-    //  NEW_COLUMN_2[7:0] =temp3[31:24]^temp3[23:16]^temp3[15:8]^temp3[7:0];
-    
-    //  temp3 [7:0]=COLUMN_2[7:0];
-    //  temp3[15:8] =(COLUMN_2[15]?(COLUMN_2[15:8] <<1'h1) ^8'h1B:COLUMN_2[15:8] <<1);
-    //  temp4 = (COLUMN_2[23] ? ((COLUMN_2[23:16] << 1) ^ 8'h1B) : (COLUMN_2[23:16] << 1));
-    //  temp3[23:16] = temp4 ^ COLUMN_2[23:16];
-    //  temp3 [31:24]=COLUMN_2[31:24];
-    //  NEW_COLUMN_2[15:8] =temp3[31:24]^temp3[23:16]^temp3[15:8]^temp3[7:0];
-
-    //  temp3 [7:0]=COLUMN_2[7:0];
-    //  temp3 [15:8]=COLUMN_2[15:8];
-    //  temp3[23:16]=(COLUMN_2[23]?(COLUMN_2[23:16] <<1'h1) ^8'h1B:COLUMN_2[23:16] <<1);
-    //  temp4 = (COLUMN_2[31] ? ((COLUMN_2[31:24] << 1) ^ 8'h1B) : (COLUMN_2[31:24] << 1));
-    //  temp3[31:24] = temp4 ^ COLUMN_2[31:24];
-    //  NEW_COLUMN_2[23:16] =temp3[31:24]^temp3[23:16]^temp3[15:8]^temp3[7:0];
-
-
-    //  temp4 = (COLUMN_2[7] ? ((COLUMN_2[7:0] << 1) ^ 8'h1B) : (COLUMN_2[7:0] << 1));
-    //  temp3[7:0] = temp4 ^ COLUMN_2[7:0];
-    //  temp3 [15:8] =COLUMN_2[15:8] ;
-    //  temp3 [23:16] =COLUMN_2[23:16] ;
-    //  temp3[31:24] =(COLUMN_2[31]?(COLUMN_2[31:24] <<1'h1) ^8'h1B:COLUMN_2[31:24] <<1);
-    //  NEW_COLUMN_2[31:24] =temp3[31:24]^temp3[23:16]^temp3[15:8]^temp3[7:0];
+   
 
 //column
 
@@ -162,7 +135,7 @@ module mixcolumn (
      temp7[31:24] =(COLUMN_4[31]?(COLUMN_4[31:24] <<1'h1) ^8'h1B:COLUMN_4[31:24] <<1);
      NEW_COLUMN_4[31:24] =temp7[31:24]^temp7[23:16]^temp7[15:8]^temp7[7:0];
 
-
+mixcolumn_o={NEW_COLUMN_4,NEW_COLUMN_3,NEW_COLUMN_2,NEW_COLUMN_1};
 
 
     end

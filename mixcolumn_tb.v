@@ -10,7 +10,7 @@ module mixcolumn_tb;
 
     initial begin
         // Initialize input
-        mixcolumn_i = 128'H95D88CA6C34AE746EC904C6E974DFD87;
+        mixcolumn_i = 128'H95D88CA6C34AE746EC904C6E974DF287;
 
         // Wait for the computation to complete
         #100;
