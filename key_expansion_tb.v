@@ -1,4 +1,4 @@
-module tb_keyexpansion;
+module keyexpansion_tb;
 
     // Testbench signals
     reg clk;
@@ -24,8 +24,7 @@ module tb_keyexpansion;
     initial begin
         // Initialize inputs
         rst = 1;
-        key = 256'h642423baa95efb4362d3f2ce993c0904150f258aa1fe796841d7b4429c9b5a30
-;
+        key = 256'h642423baa95efb4362d3f2ce993c0904150f258aa1fe796841d7b4429c9b5a30;
 
         // Reset the system
         #10;
@@ -34,7 +33,7 @@ module tb_keyexpansion;
         // rst = 1;
 
         // Apply test vectors
-        #260; // Run simulation for some time
+        #1100; // Run simulation for some time
 
         // End simulation
         $finish;
@@ -44,7 +43,10 @@ module tb_keyexpansion;
     // Waveform dump
     initial begin
         $dumpfile("keyexpansion.vcd");
-        $dumpvars(0, tb_keyexpansion);
+        $dumpvars(0,keyexpansion_tb);
     end
 
-endmodule
+ endmodule
+// iverilog -o key_expansion.out key_expansion.v key_expansion_tb.v
+// vvp key_expansion.out
+// gtkwave keyexpansion.vcd
