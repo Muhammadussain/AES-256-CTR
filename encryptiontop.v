@@ -172,7 +172,8 @@ module encryptiontop (
 );
 
     // Internal signals
-    reg [127:0] temp, temp2,temp3, sub_bytes_temp_in;
+    reg [127:0] temp3 [0:14];
+    reg [127:0] temp, temp2, sub_bytes_temp_in;
     wire [127:0] round_keys [1:15]; // Round keys from 1 to 15
     wire round1_en, round2_en, round3_en, round4_en, round5_en, round6_en, round7_en, round8_en, round9_en, round10_en, round11_en, round12_en, round13_en, round14_en, round15_en;
     wire [127:0] sub_bytes_temp_out, shift_rows_out, mix_columns_out, out, round1, round2;
@@ -227,7 +228,7 @@ module encryptiontop (
     sbox sbox9 (.s_in(out[79:72]), .sub(sub_bytes_temp_out[79:72]));
     sbox sbox10 (.s_in(out[87:80]), .sub(sub_bytes_temp_out[87:80]));
     sbox sbox11 (.s_in(out[95:88]), .sub(sub_bytes_temp_out[95:88]));
-    sbox sbox12 (.s_in(sub_bytes_temp_in[103:96]), .sub(sub_bytes_temp_out[103:96]));
+    sbox sbox12 (.s_in(out[103:96]), .sub(sub_bytes_temp_out[103:96]));
     sbox sbox13 (.s_in(sub_bytes_temp_in[111:104]), .sub(sub_bytes_temp_out[111:104]));
     sbox sbox14 (.s_in(sub_bytes_temp_in[119:112]), .sub(sub_bytes_temp_out[119:112]));
     sbox sbox15 (.s_in(sub_bytes_temp_in[127:120]), .sub(sub_bytes_temp_out[127:120]));
@@ -292,13 +293,14 @@ module encryptiontop (
                 end 
             end
             ROUND2: begin
-                //   temp3 = out;
-                // sub_bytes_temp_in = temp3;
+                            temp3[0]=out;
+
+                  sub_bytes_temp_in = temp3[0];
                 temp = mix_columns_out;
                 temp2 = round2;
-                if (round2_en)
-                    next_state = ROUND3;
-            end
+            //     if (round2_en)
+            //         next_state = ROUND3;
+             end
             ROUND3: begin
                 if (round3_en) begin
                     next_state = ROUND4;
