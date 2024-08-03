@@ -24,12 +24,16 @@ module tb_sbox;
         // Initialize inputs
          rst = 1; // Uncomment if reset is needed in the module
         #10;
-        s_in = 128'h00112233445566778899aabbccddeeff;
         rst=1'b0;
+        #20;
+        s_in = 128'h00112233445566778899aabbccddeeff;
+       // rst=1'b0;
         // Apply reset
         #10;
-       
-        // Finish simulation
+        #20;//
+       s_in =1'h0;
+        
+         //Finish simulation
         #160;
         $finish;
     end
