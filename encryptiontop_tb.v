@@ -31,7 +31,7 @@ module encryptiontop_tb;
         #10 rst = 0;
 
         // Wait for encryption to complete
-        #1000;
+        #3000;
 
         // Check the result
         $display("Ciphertext: %h", ciphertext);

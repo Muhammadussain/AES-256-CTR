@@ -13,7 +13,7 @@ module encryptiontop (
 );
 
     // Internal signals
-    reg [127:0] temp3,rk,rk_temp,rk_temp2;
+    reg [127:0] temp3,rk,rk_temp,rk_temp2,rk_temp3,rk_temp4,rk_temp5,rk_temp6,rk_temp7,rk_temp8,rk_temp9,rk_temp10,rk_temp11,rk_temp12,rk_temp13,rk_temp14,rk_temp15;
     reg [127:0] temp, temp2, sub_bytes_temp_in;
    
     wire round1_en, round2_en, round3_en, round4_en, round5_en, round6_en, round7_en, round8_en, round9_en, round10_en, round11_en, round12_en, round13_en, round14_en, round15_en;
@@ -188,20 +188,191 @@ module encryptiontop (
                  if (sub_bytes_temp_out &&new_counter==5'h13) begin
                     temp = mix_columns_out;
                     temp2 = round4;
+                    rk_temp3=out;
                     next_state <=ROUND4;
                       new_counter <= 5'h0;
                     
                 end
             end
-
-                // temp = mix_columns_out;
-                // temp2 = round4;
-          //  end
-            // Add other rounds here as needed
-            // FINAL_ROUND: begin
-            //     ciphertext = out;
-            //     next_state = IDLE;
-            // end
+            ROUND4: begin
+                rounds_counter = 4'h5;
+                rk =rk_temp3;
+                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h5) begin
+                    rk <= 128'h0;
+                    rk_temp3<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round5;
+                     rk_temp4=out;
+                    next_state <=ROUND5;
+                      new_counter <= 5'h0;
+                    
+                end
+            end
+              ROUND5: begin
+                rounds_counter = 4'h6;
+                rk =rk_temp4;
+                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h6) begin
+                    rk <= 128'h0;
+                    rk_temp4<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round6;
+                    rk_temp5=out;
+                    next_state <=ROUND6;
+                      new_counter <= 5'h0;
+                    
+                end
+             end
+              ROUND6: begin
+                rounds_counter = 4'h7;
+                rk =rk_temp5;
+                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h7) begin
+                    rk <= 128'h0;
+                    rk_temp5<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round7;
+                     rk_temp6=out;
+                    next_state <=ROUND7;
+                      new_counter <= 5'h0;
+                    
+                end
+             end
+              ROUND7: begin
+                rounds_counter = 4'h8;
+                rk =rk_temp6;
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h8) begin
+                    rk <= 128'h0;
+                    rk_temp6<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round8;
+                     rk_temp7=out;
+                    next_state <=ROUND8;
+                      new_counter <= 5'h0;
+                    
+                end
+            end
+              ROUND8: begin
+                rounds_counter = 4'h9;
+                rk =rk_temp7;
+                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h9) begin
+                    rk <= 128'h0;
+                    rk_temp7<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round9;
+                     rk_temp8=out;
+                    next_state <=ROUND9;
+                      new_counter <= 5'h0;
+                    
+                end
+            end
+              ROUND9: begin
+                rounds_counter = 4'hA;
+                rk =rk_temp8;
+                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hA) begin
+                    rk <= 128'h0;
+                    rk_temp8<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round10;
+                     rk_temp9=out;
+                    next_state <=ROUND10;
+                      new_counter <= 5'h0;
+                    
+                end
+            end
+              ROUND10: begin
+                rounds_counter = 4'hB;
+                rk =rk_temp9;
+                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hB) begin
+                    rk <= 128'h0;
+                    rk_temp9<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round11;
+                    rk_temp10=out;
+                    next_state <=ROUND11;
+                      new_counter <= 5'h0;
+                    
+                end
+            end
+              ROUND11: begin
+                rounds_counter = 4'hC;
+                rk =rk_temp10;
+                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hC) begin
+                    rk <= 128'h0;
+                    rk_temp10<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round12;
+                        rk_temp11=out;
+                    next_state <=ROUND12;
+                      new_counter <= 5'h0;
+                    
+                end
+             end
+              ROUND12: begin
+                rounds_counter = 4'hD;
+                rk =rk_temp11;
+                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hD) begin
+                    rk <= 128'h0;
+                    rk_temp11<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round13;
+                    rk_temp12=out;
+                    next_state <=ROUND13;
+                      new_counter <= 5'h0;
+                    
+                end
+            end
+              ROUND13: begin
+                rounds_counter = 4'hE;
+                rk =rk_temp12;
+                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hE) begin
+                    rk <= 128'h0;
+                    rk_temp12<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = mix_columns_out;
+                    temp2 = round14;
+               //     next_state <=ROUND5;
+                      new_counter <= 5'h0;
+                    
+                end
+            end
+               
         endcase
     end
 
