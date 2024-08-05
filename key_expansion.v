@@ -2,7 +2,10 @@ module keyexpansion (
     input wire [255:0] key,
     input wire clk,
     input wire rst,
-    output reg [127:0] out_key
+    output reg round1_en,round2_en,round3_en,round4_en,round5_en,round6_en,round7_en,round8_en,round9_en,round10_en,round11_en,round12_en,round13_en,round14_en,round15_en,
+    // output reg [127:0] out_key,round1,round2,round3,round4,round5,round6,round7,round8,round9,round10,round11,round12,round13,round14,round15
+    output reg [127:0] round1,round2,round3,round4,round5,round6,round7,round8,round9,round10,round11,round12,round13,round14,round15
+
 
 
 );  reg [255:0] key_in,word;
@@ -57,7 +60,9 @@ always @(*) begin
             if (rounds_counter == 1'h0) begin
                 expansion1 = key_in[127:0];
                 round1_result = expansion1;
-                out_key =round1_result;
+                // out_key =round1_result;
+                round1 =round1_result;
+                round1_en=1'b1;
 				nextstate=EXPANSION_2;
             end 
 		
@@ -68,6 +73,8 @@ always @(*) begin
                 expansion1[95:64]  = round3_result[95:64] ^ expansion1[63:32];
                 expansion1[127:96] = round3_result[127:96] ^ expansion1[95:64];
 				round5_result=expansion1;
+                round5 =round5_result;
+                round5_en=1'b1;
 				rot = round5_result[127:96];
                 second_subcounter=2'h0;
 				nextstate =SUB_BYTE;
@@ -78,6 +85,8 @@ always @(*) begin
                  expansion1[95:64]  = round7_result[95:64] ^ expansion1[63:32];
                  expansion1[127:96] = round7_result[127:96] ^ expansion1[95:64];
 				round9_result=expansion1;
+                round9 =round9_result;
+                round9_en=1'b1;
 				rot = round9_result[127:96];
                 second_subcounter=2'h0;
 				nextstate =SUB_BYTE;
@@ -88,6 +97,8 @@ always @(*) begin
                  expansion1[95:64]  = round11_result[95:64] ^ expansion1[63:32];
                  expansion1[127:96] = round11_result[127:96] ^ expansion1[95:64];
 				round13_result=expansion1;
+                round13 =round13_result;
+                round13_en=1'b1;
 				rot = round13_result[127:96];
                 second_subcounter=2'h0;
 				nextstate =SUB_BYTE;
@@ -101,7 +112,9 @@ always @(*) begin
                 expansion2 = key_in[256:128];
                 temp = expansion2[127:96];
                 round2_result = expansion2;
-                out_key=round2_result;
+                round2 =round2_result;
+                round2_en=1'b1;
+                // out_key=round2_result;
             end
 
             if(sub_roundcounter==4'h6)begin
@@ -111,6 +124,8 @@ always @(*) begin
                 expansion2[95:64]  = round4_result[95:64] ^ expansion2[63:32];
                 expansion2[127:96] = round4_result[127:96] ^ expansion2[95:64];
 				round6_result=expansion2;
+                round6 =round6_result;
+                round6_en=1'b1;
                 temp=round6_result[127:96];
             end
             if(sub_roundcounter==4'hA)begin
@@ -120,6 +135,8 @@ always @(*) begin
                 expansion2[95:64]  = round8_result[95:64] ^ expansion2[63:32];
                 expansion2[127:96] = round8_result[127:96] ^ expansion2[95:64];
 				round10_result=expansion2;
+                round10 =round10_result;
+                round10_en=1'b1;
                 temp=round10_result[127:96];
             end
               if(sub_roundcounter==4'hE)begin
@@ -129,6 +146,8 @@ always @(*) begin
                 expansion2[95:64]  = round12_result[95:64] ^ expansion2[63:32];
                 expansion2[127:96] = round12_result[127:96] ^ expansion2[95:64];
 				round14_result=expansion2;
+                round14 =round14_result;
+                round14_en=1'b1;
                 temp=round14_result[127:96];
             end
 
@@ -299,15 +318,24 @@ end
     
 	if (sub_roundcounter ==4'h3) begin
         round3_result = expansion3;
+        round3 =round3_result;
+        round3_en=1'b1;
+        
     end
     if (sub_roundcounter==4'h7) begin
         round7_result=expansion3;
+        round7 =round7_result;
+        round7_en=1'b1;
     end
     if (sub_roundcounter==4'hB) begin
         round11_result=expansion3;
+        round11 =round11_result;
+        round11_en=1'b1;
     end
     if (sub_roundcounter==4'hF) begin
         round15_result=expansion3;
+        round15 =round15_result;
+        round15_en=1'b1;
         nextstate=DONE;
     end
     else begin
@@ -326,12 +354,18 @@ end
 
     if (rounds_counter == 1'b0) begin
         round4_result = expansion4;
+        round4 =round4_result;
+        round4_en=1'b1;
     end
     if (rounds_counter==1'b1) begin
         round8_result =expansion4;
+        round8 =round8_result;
+        round8_en=1'b1;
     end
     if (rounds_counter==4'h2) begin
         round12_result =expansion4;
+        round12 =round12_result;
+        round12_en=1'b1;
     end
 
 
