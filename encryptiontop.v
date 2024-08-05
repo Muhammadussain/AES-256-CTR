@@ -38,6 +38,7 @@ module encryptiontop (
     localparam ROUND12 = 5'b01101;
     localparam ROUND13 = 5'b01110;
     localparam FINAL_ROUND = 5'b01111;
+    localparam DONE = 5'b10000;
 
     // Key expansion module
     keyexpansion key_expansion (
@@ -179,7 +180,7 @@ module encryptiontop (
             ROUND3: begin
                 rounds_counter = 4'h4;
                 rk =rk_temp2;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h3 &&rounds_counter== 4'h4) begin
                     rk <= 128'h0;
                     rk_temp2<=128'h0;
@@ -197,7 +198,7 @@ module encryptiontop (
             ROUND4: begin
                 rounds_counter = 4'h5;
                 rk =rk_temp3;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h5) begin
                     rk <= 128'h0;
                     rk_temp3<=128'h0;
@@ -215,7 +216,7 @@ module encryptiontop (
               ROUND5: begin
                 rounds_counter = 4'h6;
                 rk =rk_temp4;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h6) begin
                     rk <= 128'h0;
                     rk_temp4<=128'h0;
@@ -233,7 +234,7 @@ module encryptiontop (
               ROUND6: begin
                 rounds_counter = 4'h7;
                 rk =rk_temp5;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h7) begin
                     rk <= 128'h0;
                     rk_temp5<=128'h0;
@@ -268,7 +269,7 @@ module encryptiontop (
               ROUND8: begin
                 rounds_counter = 4'h9;
                 rk =rk_temp7;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h9) begin
                     rk <= 128'h0;
                     rk_temp7<=128'h0;
@@ -286,7 +287,7 @@ module encryptiontop (
               ROUND9: begin
                 rounds_counter = 4'hA;
                 rk =rk_temp8;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hA) begin
                     rk <= 128'h0;
                     rk_temp8<=128'h0;
@@ -304,7 +305,7 @@ module encryptiontop (
               ROUND10: begin
                 rounds_counter = 4'hB;
                 rk =rk_temp9;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hB) begin
                     rk <= 128'h0;
                     rk_temp9<=128'h0;
@@ -322,7 +323,7 @@ module encryptiontop (
               ROUND11: begin
                 rounds_counter = 4'hC;
                 rk =rk_temp10;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hC) begin
                     rk <= 128'h0;
                     rk_temp10<=128'h0;
@@ -340,7 +341,7 @@ module encryptiontop (
               ROUND12: begin
                 rounds_counter = 4'hD;
                 rk =rk_temp11;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hD) begin
                     rk <= 128'h0;
                     rk_temp11<=128'h0;
@@ -358,7 +359,7 @@ module encryptiontop (
               ROUND13: begin
                 rounds_counter = 4'hE;
                 rk =rk_temp12;
-                //yahan mainay new_counter ko h2 kiya to band hogaya jb h3 tha to chl raha tha 
+                
                 if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hE) begin
                     rk <= 128'h0;
                     rk_temp12<=128'h0;
@@ -367,10 +368,31 @@ module encryptiontop (
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
                     temp = mix_columns_out;
                     temp2 = round14;
-               //     next_state <=ROUND5;
+                    rk_temp13=out;
+                    next_state <=FINAL_ROUND;
                       new_counter <= 5'h0;
                     
                 end
+            end
+              FINAL_ROUND: begin
+                rounds_counter = 4'hF;
+                rk =rk_temp13;
+                
+                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hF) begin
+                    rk <= 128'h0;
+                    rk_temp13<=128'h0;
+                  
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                    temp = shift_rows_out;
+                    temp2 = round15;
+                     ciphertext=out;
+                    next_state= DONE;
+                      new_counter <= 5'h0;
+                    
+                end
+                                // ciphertext=out;
+
             end
                
         endcase
