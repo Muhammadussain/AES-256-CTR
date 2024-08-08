@@ -157,7 +157,7 @@ always @(*) begin
 
         ROT_BYTE: begin
             sub_counter = 2'b00;
-            rot = {temp[23:0], temp[31:24]};
+            rot = {temp[7:0], temp[31:8]};
             nextstate = SUB_BYTE;
         end
        SUB_BYTE: begin
