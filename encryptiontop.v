@@ -82,9 +82,6 @@ module encryptiontop (
         .s_in(rk),
         .clk(clk),
         .rst(rst),
-        .counter(rounds_counter),
-        .s_ready(s_ready),
-        .s_ready2(s_ready2),
         .s_o(sub_bytes_temp_out)
     );
   
@@ -129,46 +126,44 @@ module encryptiontop (
             end
             INITIAL_ADD_ROUND_KEY: begin
                  rounds_counter = 4'h1;
-                temp = plaintext;
-                temp2 = round1;
-                rk = out;
-                //yahan purani state main hum nay sin main values dal di phir state change ki hai
-                if (round1_en ) begin
-                   
-                    next_state = ROUND1;
-                       new_counter = 5'h0;
+                
+               
+                if (rounds_counter==4'h1 && new_counter ==4'h2 ) begin
+                   temp = plaintext;
+                   temp2 = round1;
+                   rk = out;
+                    next_state <= ROUND1;
+                       new_counter <= 5'h0;
                 end
               
             end
             ROUND1: begin
-               // new_counter = 5'h0;
               
-                rk <= 128'h0;
-                if (sub_bytes_temp_out) begin
+              rounds_counter = 4'h2;
+               if (new_counter == 4'h2 &&rounds_counter== 4'h2) begin
+                    rk <= 128'h0;
+                  //  rk_temp <= 128'h0;
+                end
+                 if (sub_bytes_temp_out &&new_counter==5'h12 &&rounds_counter==4'h2) begin
                     temp = mix_columns_out;
                     temp2 = round2;
-                end
-                rounds_counter = 4'h2;
-                if (round2_en && sub_bytes_temp_out) begin
-                    next_state = ROUND2;
-                     rk_temp = out; //yahan main rk temp ki jagah direct rk main values dal ker daikh raha
-                    //  rk = out; //yahan main rk temp ki jagah direct rk main values dal ker daikh raha
-                       
-                         new_counter = 5'h0;
+                    rk_temp=out;
+                    next_state <=ROUND2;
+                      new_counter <= 5'h0;
                     
                 end
+           
             end
             ROUND2: begin
-                   //yehan rk ka scena yeh hai k har baar pehlay input dainay hoga phir input ko zero kernay hoga jissay jb byte counter 0 hoga and ussi cycyle main hamain input ko zero kerna hai
                    
                 
                 rounds_counter = 4'h3;
                  rk = rk_temp;
-                if (s_ready) begin
-                    rk = 128'h0;
-                    rk_temp = 128'h0;
+                if (new_counter == 4'h2 &&rounds_counter== 4'h3) begin
+                    rk <= 128'h0;
+                    rk_temp <= 128'h0;
                 end
-                if (sub_bytes_temp_out &&new_counter==5'h12) begin
+                if (sub_bytes_temp_out &&new_counter==5'h12 &&rounds_counter==4'h3) begin
                     temp = mix_columns_out;
                     temp2 = round3;
                     rk_temp2=out;
@@ -181,12 +176,12 @@ module encryptiontop (
                 rounds_counter = 4'h4;
                 rk =rk_temp2;
                 
-                if (s_ready && new_counter == 4'h3 &&rounds_counter== 4'h4) begin
+                if (new_counter == 4'h2 &&rounds_counter== 4'h4) begin
                     rk <= 128'h0;
                     rk_temp2<=128'h0;
                   
                 end
-                 if (sub_bytes_temp_out &&new_counter==5'h13) begin
+                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
                     temp = mix_columns_out;
                     temp2 = round4;
                     rk_temp3=out;
@@ -199,7 +194,7 @@ module encryptiontop (
                 rounds_counter = 4'h5;
                 rk =rk_temp3;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h5) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'h5) begin
                     rk <= 128'h0;
                     rk_temp3<=128'h0;
                   
@@ -217,7 +212,7 @@ module encryptiontop (
                 rounds_counter = 4'h6;
                 rk =rk_temp4;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h6) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'h6) begin
                     rk <= 128'h0;
                     rk_temp4<=128'h0;
                   
@@ -235,7 +230,7 @@ module encryptiontop (
                 rounds_counter = 4'h7;
                 rk =rk_temp5;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h7) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'h7) begin
                     rk <= 128'h0;
                     rk_temp5<=128'h0;
                   
@@ -252,7 +247,7 @@ module encryptiontop (
               ROUND7: begin
                 rounds_counter = 4'h8;
                 rk =rk_temp6;
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h8) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'h8) begin
                     rk <= 128'h0;
                     rk_temp6<=128'h0;
                   
@@ -270,7 +265,7 @@ module encryptiontop (
                 rounds_counter = 4'h9;
                 rk =rk_temp7;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'h9) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'h9) begin
                     rk <= 128'h0;
                     rk_temp7<=128'h0;
                   
@@ -288,7 +283,7 @@ module encryptiontop (
                 rounds_counter = 4'hA;
                 rk =rk_temp8;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hA) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'hA) begin
                     rk <= 128'h0;
                     rk_temp8<=128'h0;
                   
@@ -306,7 +301,7 @@ module encryptiontop (
                 rounds_counter = 4'hB;
                 rk =rk_temp9;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hB) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'hB) begin
                     rk <= 128'h0;
                     rk_temp9<=128'h0;
                   
@@ -324,7 +319,7 @@ module encryptiontop (
                 rounds_counter = 4'hC;
                 rk =rk_temp10;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hC) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'hC) begin
                     rk <= 128'h0;
                     rk_temp10<=128'h0;
                   
@@ -342,7 +337,7 @@ module encryptiontop (
                 rounds_counter = 4'hD;
                 rk =rk_temp11;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hD) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'hD) begin
                     rk <= 128'h0;
                     rk_temp11<=128'h0;
                   
@@ -360,7 +355,7 @@ module encryptiontop (
                 rounds_counter = 4'hE;
                 rk =rk_temp12;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hE) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'hE) begin
                     rk <= 128'h0;
                     rk_temp12<=128'h0;
                   
@@ -378,7 +373,7 @@ module encryptiontop (
                 rounds_counter = 4'hF;
                 rk =rk_temp13;
                 
-                if (s_ready && new_counter == 4'h2 &&rounds_counter== 4'hF) begin
+                if ( new_counter == 4'h2 &&rounds_counter== 4'hF) begin
                     rk <= 128'h0;
                     rk_temp13<=128'h0;
                   
@@ -391,7 +386,7 @@ module encryptiontop (
                       new_counter <= 5'h0;
                     
                 end
-                                // ciphertext=out;
+                         
 
             end
                
