@@ -2,9 +2,6 @@ module sbox (
     input wire [127:0] s_in,
     input wire clk,
     input wire rst,
-    input wire [3:0] counter,
-    output reg s_ready,
-    output reg s_ready2,
     output reg [127:0] s_o
 );
     reg [4:0] bytecounter=5'b0000;
@@ -34,12 +31,9 @@ module sbox (
         case (state)
 
             IDLE: begin
-				s_ready2=1'b0;
+				
                 if(s_in)begin
 					 temp=s_in;
-                if (counter == 4'h3||counter ==4'h4) begin
-                     s_ready=1'b1;
-                end
                 
                 
 				end
@@ -47,7 +41,7 @@ module sbox (
             end
 
             SUB_BYTE: begin
-                    s_ready2=1'b1;
+                   
 				if(bytecounter)begin
                 case (temp[7:0])
                         8'h00: sub = 8'h63; 8'h01: sub = 8'h7c; 8'h02: sub = 8'h77; 8'h03: sub = 8'h7b;
@@ -121,17 +115,12 @@ module sbox (
 			end
                   if (bytecounter == 5'h10) begin
                      s_o = temp2;
+                      next_state<=DONE;
                   end
-                 if (bytecounter==5'h11) begin
-                    					
-            next_state=DONE;
-                     
-                    
-
-                 end
+                
             end
             DONE:begin
-                s_ready2=1'b0;
+                
                  s_o = temp2;
             next_state=IDLE;
             
