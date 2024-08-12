@@ -135,8 +135,11 @@ module mixcolumn (
      temp7[31:24] =(COLUMN_4[31]?(COLUMN_4[31:24] <<1'h1) ^8'h1B:COLUMN_4[31:24] <<1);
      NEW_COLUMN_4[31:24] =temp7[31:24]^temp7[23:16]^temp7[15:8]^temp7[7:0];
 
-mixcolumn_o={NEW_COLUMN_4,NEW_COLUMN_3,NEW_COLUMN_2,NEW_COLUMN_1};
-
+temp={NEW_COLUMN_4,NEW_COLUMN_3,NEW_COLUMN_2,NEW_COLUMN_1};
+   mixcolumn_o[31:0] ={temp[103:96],temp[71:64],temp[39:32],temp[7:0]};
+        mixcolumn_o[63:32]= {temp[111:104],temp[79:72],temp[47:40],temp[15:8]};
+        mixcolumn_o[95:64] = {temp[119:112],temp[87:80],temp[55:48],temp[23:16]};;
+        mixcolumn_o[127:96] = {temp[127:120],temp[95:88],temp[63:56],temp[31:24]};
 
     end
 
