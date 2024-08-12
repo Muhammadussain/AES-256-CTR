@@ -43,8 +43,8 @@
 
 
 //module mixcolumn (
-  //  input wire [127:0] state_in,
-    //output reg [127:0] state_out
+  //  input wire [127:0] mixcolumn_i,
+    //output reg [127:0] mixcolumn_o
 //);
   // reg [31:0] col0,col1,col2,col3;
    //reg [31:0] col0_out,col1_out,col2_out,col3_out;
@@ -54,10 +54,10 @@
 
    //always @(*)begin
 
-    // col0 = state_in [31:0];
-     //col1 = state_in [63:32];
-     //col2 = state_in [95:64];
-     //col3 = state_in [127:96];
+    // col0 = mixcolumn_i [31:0];
+     //col1 = mixcolumn_i [63:32];
+     //col2 = mixcolumn_i [95:64];
+     //col3 = mixcolumn_i [127:96];
 
 
      // MixColumns transformation for col0
@@ -131,7 +131,7 @@
 
      //col3_out = {s3_out,s2_out,s1_out,s0_out};
 
-     //state_out = {col3_out, col2_out, col1_out, col0_out};
+     //mixcolumn_o = {col3_out, col2_out, col1_out, col0_out};
 
 
     
@@ -140,8 +140,8 @@
 //endmodule
 
 module inverse_mixcolumn (
-    input wire [127:0] state_in,
-    output reg [127:0] state_out
+    input wire [127:0] mixcolumn_i,
+    output reg [127:0] mixcolumn_o
 );
 
     // GF(2^8) multiplication functions
@@ -181,10 +181,10 @@ module inverse_mixcolumn (
     reg [7:0] s0_out, s1_out, s2_out, s3_out;
 
     always @(*) begin
-        col0 ={state_in[103:96],state_in[71:64],state_in[39:32],state_in[7:0]};
-        col1 = {state_in[111:104],state_in[79:72],state_in[47:40],state_in[15:8]};
-        col2 = {state_in[119:112],state_in[87:80],state_in[55:48],state_in[23:16]};;
-        col3 = {state_in[127:120],state_in[95:88],state_in[63:56],state_in[31:24]};
+        col0 ={mixcolumn_i[103:96],mixcolumn_i[71:64],mixcolumn_i[39:32],mixcolumn_i[7:0]};
+        col1 = {mixcolumn_i[111:104],mixcolumn_i[79:72],mixcolumn_i[47:40],mixcolumn_i[15:8]};
+        col2 = {mixcolumn_i[119:112],mixcolumn_i[87:80],mixcolumn_i[55:48],mixcolumn_i[23:16]};;
+        col3 = {mixcolumn_i[127:120],mixcolumn_i[95:88],mixcolumn_i[63:56],mixcolumn_i[31:24]};
 
         // Inverse MixColumns for col0
         s0 = col0[7:0]; s1 = col0[15:8]; s2 = col0[23:16]; s3 = col0[31:24];
@@ -220,10 +220,10 @@ module inverse_mixcolumn (
 
 
         temp = {col3_out, col2_out, col1_out, col0_out};
-        state_out[31:0] ={temp[103:96],temp[71:64],temp[39:32],temp[7:0]};
-        state_out[63:32]= {temp[111:104],temp[79:72],temp[47:40],temp[15:8]};
-        state_out[95:64] = {temp[119:112],temp[87:80],temp[55:48],temp[23:16]};;
-        state_out[127:96] = {temp[127:120],temp[95:88],temp[63:56],temp[31:24]};
+        mixcolumn_o[31:0] ={temp[103:96],temp[71:64],temp[39:32],temp[7:0]};
+        mixcolumn_o[63:32]= {temp[111:104],temp[79:72],temp[47:40],temp[15:8]};
+        mixcolumn_o[95:64] = {temp[119:112],temp[87:80],temp[55:48],temp[23:16]};;
+        mixcolumn_o[127:96] = {temp[127:120],temp[95:88],temp[63:56],temp[31:24]};
         
     end
     
