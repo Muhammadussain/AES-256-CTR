@@ -68,7 +68,7 @@ always @(*) begin
 		
 			else begin
 			if(sub_roundcounter == 4'h5) begin
-                expansion1[31:0]   = round3_result[31:0] ^ temp2;
+                expansion1[31:0]   = round3_result[31:0] ^ round_constant;
                 expansion1[63:32]  = round3_result[63:32] ^ expansion1[31:0];
                 expansion1[95:64]  = round3_result[95:64] ^ expansion1[63:32];
                 expansion1[127:96] = round3_result[127:96] ^ expansion1[95:64];
@@ -80,7 +80,7 @@ always @(*) begin
 				nextstate =SUB_BYTE;
             end
              if(sub_roundcounter == 4'h9) begin
-                 expansion1[31:0]   = round7_result[31:0] ^ temp2;
+                 expansion1[31:0]   = round7_result[31:0] ^ round_constant;
                  expansion1[63:32]  = round7_result[63:32] ^ expansion1[31:0];
                  expansion1[95:64]  = round7_result[95:64] ^ expansion1[63:32];
                  expansion1[127:96] = round7_result[127:96] ^ expansion1[95:64];
@@ -92,7 +92,7 @@ always @(*) begin
 				nextstate =SUB_BYTE;
             end
             if(sub_roundcounter == 4'hD) begin
-                 expansion1[31:0]   = round11_result[31:0] ^ temp2;
+                 expansion1[31:0]   = round11_result[31:0] ^ round_constant;
                  expansion1[63:32]  = round11_result[63:32] ^ expansion1[31:0];
                  expansion1[95:64]  = round11_result[95:64] ^ expansion1[63:32];
                  expansion1[127:96] = round11_result[127:96] ^ expansion1[95:64];
@@ -261,23 +261,23 @@ always @(*) begin
     if(word_counter ==4'hc && rounds_counter ==4'h2 && sub_roundcounter==4'h8)begin
             nextstate=RC_CON;
  end//PASS TILL HERE WORD32
-    if(word_counter ==4'h1 && rounds_counter ==4'h2 && sub_roundcounter==4'h9)begin
-            nextstate=EXPANSION_2;
+    if(word_counter ==4'h2 && rounds_counter ==4'h2 && sub_roundcounter==4'h9)begin
+            nextstate<=EXPANSION_2;
  end//PASS TILL HERE WORD36
  
-    if(word_counter ==4'h7 && rounds_counter ==4'h2 && sub_roundcounter==4'ha)begin
+    if(word_counter ==4'h8 && rounds_counter ==4'h2 && sub_roundcounter==4'ha)begin
             nextstate=RC_CON;
  end//PASS TILL HERE WORD40
-    if(word_counter ==4'hD && rounds_counter ==4'h2 && sub_roundcounter==4'hB)begin
+    if(word_counter ==4'hE && rounds_counter ==4'h2 && sub_roundcounter==4'hB)begin
             nextstate=EXPANSION_4;
  end//PASS TILL HERE WORD44
- if(word_counter ==4'h3 && rounds_counter ==4'h3 && sub_roundcounter==4'hC)begin
+ if(word_counter ==4'h4 && rounds_counter ==4'h3 && sub_roundcounter==4'hC)begin
             nextstate=RC_CON;
  end//PASS TILL HERE WORD48
- if(word_counter ==4'h9 && rounds_counter ==4'h3 && sub_roundcounter==4'hD)begin
+ if(word_counter ==4'hA && rounds_counter ==4'h3 && sub_roundcounter==4'hD)begin
             nextstate=EXPANSION_2;
  end//PASS TILL HERE WORD52
- if(word_counter ==4'hF && rounds_counter ==4'h3 && sub_roundcounter==4'hE)begin
+ if(word_counter ==4'h0 && rounds_counter ==4'h3 && sub_roundcounter==4'hE)begin
             nextstate=RC_CON;
  end
 //  if(word_counter ==4'hF && rounds_counter ==4'h3 && sub_roundcounter==4'hE)begin
@@ -287,13 +287,14 @@ always @(*) begin
        end  
 		RC_CON: begin
    		 case (sub_roundcounter)
-        4'h2: round_constant = {temp2[31:24] ^ 8'h01, temp2[23:0]};
-        4'h4: round_constant = {temp2[31:24] ^ 8'h02, temp2[23:0]};
-        4'h6: round_constant = {temp2[31:24] ^ 8'h04, temp2[23:0]};
-        4'h8: round_constant = {temp2[31:24] ^ 8'h08, temp2[23:0]};
-        4'hA: round_constant = {temp2[31:24] ^ 8'h10, temp2[23:0]};
-        4'hC: round_constant = {temp2[31:24] ^ 8'h20, temp2[23:0]};
-        4'hE: round_constant = {temp2[31:24] ^ 8'h40, temp2[23:0]};
+        // 4'h2: round_constant = {temp2[31:24] ^ 8'h01, temp2[23:0]};
+        4'h2: round_constant = {temp2[31:8],temp2[7:0] ^ 8'h01};
+        4'h4: round_constant = {temp2[31:8],temp2[7:0] ^ 8'h02};
+        4'h6: round_constant = {temp2[31:8],temp2[7:0] ^ 8'h04};
+        4'h8: round_constant = {temp2[31:8],temp2[7:0] ^ 8'h08};
+        4'hA: round_constant = {temp2[31:8],temp2[7:0] ^ 8'h10};
+        4'hC: round_constant = {temp2[31:8],temp2[7:0] ^ 8'h20};
+        4'hE: round_constant = {temp2[31:8],temp2[7:0] ^ 8'h40};
        
     endcase
 
