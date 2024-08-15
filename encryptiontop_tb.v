@@ -24,8 +24,8 @@ module encryptiontop_tb;
         $dumpvars(0, encryptiontop_tb);
         clk = 0;
         rst = 1;
-        plaintext = 128'h00112233445566778899aabbccddeeff;
-        key_i = 256'h000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f;
+        plaintext = 128'hffeeddccbbaa99887766554433221100;
+        key_i = 256'h1f1e1d1c1b1a191817161514131211100f0e0d0c0b0a09080706050403020100;
 
         // Apply reset
         #10 rst = 0;
