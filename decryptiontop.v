@@ -16,7 +16,7 @@ module decryptiontop (
     reg [127:0] temp, temp2, sub_bytes_temp_in;
    
     wire round1_en, round2_en, round3_en, round4_en, round5_en, round6_en, round7_en, round8_en, round9_en, round10_en, round11_en, round12_en, round13_en, round14_en, round15_en;
-    wire [127:0] sub_bytes_temp_out, shift_rows_out, mix_columns_out, out, round1,round2,round3,round4,round5,round6,round7,round8,round9,round10,round11,round12,round13,round14,round15;
+    wire [127:0] sub_bytes_temp_out, shift_rows_out, mix_columns_out, out, round1,round2,round3,round4,round5,round6,round7,round8,round9,round10,round11,round12,round13,round14,round15,state_in;
 
     reg [4:0] state, next_state; // Increased size to handle more states
     reg [4:0] new_counter; // Increased size to handle more states
@@ -81,11 +81,11 @@ keyexpansion key_expansion (
         .s_o(sub_bytes_temp_out)
     );
     inverse_shiftrows inverse_shift_rows (
-        .state_in(sub_bytes_temp_out),
+        .state_in(temp3),
         .state_out(shift_rows_out)
     );
      inverse_mixcolumn inverse_mix_columns (
-        .mixcolumn_i(shift_rows_out),
+        .mixcolumn_i(out),
         .mixcolumn_o(mix_columns_out)
     ); 
     addroundkey addroundKey (
@@ -119,7 +119,8 @@ keyexpansion key_expansion (
                 
                      temp = ciphertext;
                      temp2 = round15;
-                      rk = out;
+                     temp3=out;
+                      rk = shift_rows_out;
                     next_state <= ROUND1;
                        new_counter <= 5'h0;
 
@@ -129,15 +130,15 @@ keyexpansion key_expansion (
             ROUND1: begin
                // new_counter = 5'h0;
                rounds_counter = 4'h2;
-                rk <= 128'h0;
                if (new_counter == 4'h2 &&rounds_counter== 4'h2) begin
                     rk <= 128'h0;
                 
                 end
-              if (sub_bytes_temp_out &&new_counter==5'h11 &&rounds_counter==4'h2) begin
-                    temp = mix_columns_out;
+              if (sub_bytes_temp_out &&new_counter==5'h12 &&rounds_counter==4'h2) begin
+                    temp = sub_bytes_temp_out;
                     temp2 = round14;
-                    rk_temp=out;
+                    rk_temp=shift_rows_out;
+                    temp3=mix_columns_out;
                     next_state <=ROUND2;
                       new_counter <= 5'h0;
                     
@@ -153,9 +154,10 @@ keyexpansion key_expansion (
                     rk_temp <= 128'h0;
                 end
                 if (sub_bytes_temp_out &&new_counter==5'h12&&rounds_counter==4'h3) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round13;
-                    rk_temp2=out;
+                    temp3=mix_columns_out;
+                    rk_temp2=shift_rows_out;
                     next_state <=ROUND3;
                       new_counter <= 5'h0;
                     
@@ -171,9 +173,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round12;
-                    rk_temp3=out;
+                    temp3=mix_columns_out;
+                    rk_temp3=shift_rows_out;
                     next_state <=ROUND4;
                       new_counter <= 5'h0;
                     
@@ -189,9 +192,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round11;
-                     rk_temp4=out;
+                    temp3=mix_columns_out;
+                     rk_temp4=shift_rows_out;
                     next_state <=ROUND5;
                       new_counter <= 5'h0;
                     
@@ -207,9 +211,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round10;
-                    rk_temp5=out;
+                    temp3=mix_columns_out;
+                    rk_temp5=shift_rows_out;
                     next_state <=ROUND6;
                       new_counter <= 5'h0;
                     
@@ -225,9 +230,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round9;
-                     rk_temp6=out;
+                    temp3=mix_columns_out;
+                     rk_temp6=shift_rows_out;
                     next_state <=ROUND7;
                       new_counter <= 5'h0;
                     
@@ -242,9 +248,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round8;
-                     rk_temp7=out;
+                    temp3=mix_columns_out;
+                     rk_temp7=shift_rows_out;
                     next_state <=ROUND8;
                       new_counter <= 5'h0;
                     
@@ -260,9 +267,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round7;
-                     rk_temp8=out;
+                    temp3=mix_columns_out;
+                     rk_temp8=shift_rows_out;
                     next_state <=ROUND9;
                       new_counter <= 5'h0;
                     
@@ -278,9 +286,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round6;
-                     rk_temp9=out;
+                    temp3=mix_columns_out;
+                     rk_temp9=shift_rows_out;
                     next_state <=ROUND10;
                       new_counter <= 5'h0;
                     
@@ -296,9 +305,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round5;
-                    rk_temp10=out;
+                    temp3=mix_columns_out;
+                    rk_temp10=shift_rows_out;
                     next_state <=ROUND11;
                       new_counter <= 5'h0;
                     
@@ -314,9 +324,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round4;
-                        rk_temp11=out;
+                    temp3=mix_columns_out;
+                        rk_temp11=shift_rows_out;
                     next_state <=ROUND12;
                       new_counter <= 5'h0;
                     
@@ -332,9 +343,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round3;
-                    rk_temp12=out;
+                    temp3=mix_columns_out;
+                    rk_temp12=shift_rows_out;
                     next_state <=ROUND13;
                       new_counter <= 5'h0;
                     
@@ -350,9 +362,10 @@ keyexpansion key_expansion (
                   
                 end
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = mix_columns_out;
+                    temp = sub_bytes_temp_out;
                     temp2 = round2;
-                    rk_temp13=out;
+                    temp3=mix_columns_out;
+                    rk_temp13=shift_rows_out;
                     next_state <=FINAL_ROUND;
                       new_counter <= 5'h0;
                     
@@ -367,14 +380,15 @@ keyexpansion key_expansion (
                     rk_temp13<=128'h0;
                   
                 end
-                 if (sub_bytes_temp_out &&new_counter==5'h12) begin
-                    temp = shift_rows_out;
-                    temp2 = round1;
-                     plaintext=out;
-                    next_state= DONE;
-                      new_counter <= 5'h0;
+                  if (sub_bytes_temp_out &&new_counter==5'h12 &&state==5'h0f) begin
+                       temp = sub_bytes_temp_out;
+                      temp2 = round1;
+                //     temp3=mix_columns_out;
+                      plaintext=out;
+                //     next_state= DONE;
+                //       new_counter <= 5'h0;
                     
-                end
+                 end
                                 // plaintext=out;
 
             end
