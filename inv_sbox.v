@@ -2,8 +2,7 @@ module inv_sbox (
     input wire [127:0] s_in,
     input wire clk,
     input wire rst,
-    input wire [3:0] counter,
-       output reg [127:0] s_o
+    output reg [127:0] s_o
 );
     reg [4:0] bytecounter=5'b0000;
 	reg [2:0] state, next_state=3'b000;
@@ -32,17 +31,20 @@ module inv_sbox (
         case (state)
 
             IDLE: begin
+				
                 if(s_in)begin
 					 temp=s_in;
+                
                 
 				end
                             next_state = SUB_BYTE;
             end
 
             SUB_BYTE: begin
+                   
 				if(bytecounter)begin
                 case (temp[7:0])
-                        8'h00: sub = 8'h52; 8'h01: sub = 8'h09; 8'h02: sub = 8'h6a; 8'h03: sub = 8'hd5;
+                          8'h00: sub = 8'h52; 8'h01: sub = 8'h09; 8'h02: sub = 8'h6a; 8'h03: sub = 8'hd5;
                         8'h04: sub = 8'h30; 8'h05: sub = 8'h36; 8'h06: sub = 8'ha5; 8'h07: sub = 8'h38;
                         8'h08: sub = 8'hbf; 8'h09: sub = 8'h40; 8'h0a: sub = 8'ha3; 8'h0b: sub = 8'h9e;
                         8'h0c: sub = 8'h81; 8'h0d: sub = 8'hf3; 8'h0e: sub = 8'hd7; 8'h0f: sub = 8'hfb;
@@ -106,7 +108,6 @@ module inv_sbox (
                         8'hf4: sub = 8'hba; 8'hf5: sub = 8'h77; 8'hf6: sub = 8'hd6; 8'hf7: sub = 8'h26;
                         8'hf8: sub = 8'he1; 8'hf9: sub = 8'h69; 8'hfa: sub = 8'h14; 8'hfb: sub = 8'h63;
                         8'hfc: sub = 8'h55; 8'hfd: sub = 8'h21; 8'hfe: sub = 8'h0c; 8'hff: sub = 8'h7d;
-                        
                     endcase
  
                 temp2 = {sub[7:0], temp2[127:8]};
@@ -116,8 +117,10 @@ module inv_sbox (
                      s_o = temp2;
                       next_state<=DONE;
                   end
+                
             end
             DONE:begin
+                
                  s_o = temp2;
             next_state=IDLE;
             
