@@ -7,9 +7,12 @@
 module encryptiontop (
     input wire clk,
     input wire rst,
-    input wire [127:0] plaintext,
-    input wire [255:0] key_i,
-    output reg [127:0] ciphertext
+    // input wire [127:0] plaintext,
+    // input wire [255:0] key_i,
+    // output reg [127:0] ciphertext
+    input wire [0:127] plaintext,
+    input wire [0:255] key_i,
+    output reg [0:127] ciphertext
 );
 
     // Internal signals
