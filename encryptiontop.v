@@ -7,18 +7,17 @@
 module encryptiontop (
     input wire clk,
     input wire rst,
-    // input wire [127:0] plaintext,
-    // input wire [255:0] key_i,
-    // output reg [127:0] ciphertext
-    input wire [0:127] plaintext,
-    input wire [0:255] key_i,
-    output reg [0:127] ciphertext
+    input wire [127:0] plaintext,
+    input wire [255:0] key_i,
+    output reg [127:0] ciphertext
+   
 );
 
     // Internal signals
     reg [127:0] temp3,rk,rk_temp,rk_temp2,rk_temp3,rk_temp4,rk_temp5,rk_temp6,rk_temp7,rk_temp8,rk_temp9,rk_temp10,rk_temp11,rk_temp12,rk_temp13,rk_temp14,rk_temp15;
-    reg [127:0] temp, temp2, sub_bytes_temp_in;
-   
+    reg [127:0] temp, temp2, sub_bytes_temp_in,plaintext_temp;
+       reg [127:0] previous_plaintext;  // To detect changes in plaintext
+
     wire round1_en, round2_en, round3_en, round4_en, round5_en, round6_en, round7_en, round8_en, round9_en, round10_en, round11_en, round12_en, round13_en, round14_en, round15_en;
     wire [127:0] sub_bytes_temp_out, shift_rows_out, mix_columns_out, out, round1,round2,round3,round4,round5,round6,round7,round8,round9,round10,round11,round12,round13,round14,round15;
 
@@ -108,8 +107,9 @@ module encryptiontop (
     );
 
     // FSM sequential logic
-    always @(posedge clk or posedge rst) begin
-        if (rst) begin
+    always @(posedge clk ) begin
+       if (!rst &&plaintext) begin
+        //  if (rst ) begin
             state <= IDLE;
             new_counter <= 5'h0;
         end else begin
@@ -119,20 +119,26 @@ module encryptiontop (
             
         end
     end
+  
+
 
     always @(*) begin
         case (state)
             IDLE: begin
                 next_state = INITIAL_ADD_ROUND_KEY;
+                if(plaintext)begin
+                    plaintext_temp = plaintext;
+                end
                 rounds_counter = 4'h0;
                 new_counter = 5'h0;
             end
+     
             INITIAL_ADD_ROUND_KEY: begin
                  rounds_counter = 4'h1;
                 
                
                 if (rounds_counter==4'h1 && new_counter ==4'h2 ) begin
-                   temp = plaintext;
+                   temp = plaintext_temp;
                    temp2 = round1;
                    rk = out;
                     next_state <= ROUND1;
@@ -385,7 +391,7 @@ module encryptiontop (
                     temp = shift_rows_out;
                     temp2 = round15;
                      ciphertext=out;
-                    next_state= DONE;
+                    next_state <= DONE;
                       new_counter <= 5'h0;
                     
                 end
