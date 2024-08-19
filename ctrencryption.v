@@ -1,5 +1,5 @@
 `include "encryptiontop.v"
-module ctr_encryption (
+module ctrencryption (
     input wire [1023:0] plaintext_in,   // Input plaintext (up to 2000 bits)
     input wire [255:0] key,          // AES-256 key (256 bits)
     input wire [127:0] iv,
@@ -10,9 +10,11 @@ module ctr_encryption (
 );
     wire [127:0]  key_i,plaintext,ciphertext;
     reg [127:0] iv_temp;
+    
+    reg [7:0] [127:0] encryptednonce;       
     reg [7:0] [127:0] encryptedctr;       
     reg [7:0] [127:0] plain;             
-    reg [3:0]  state,next_state,counter;
+    reg [3:0]  state,next_state,counter=4'b0000;
     localparam IDLE=4'h0;
     localparam ROUND1=4'h1;
     localparam ROUND2=4'h2;
@@ -37,13 +39,14 @@ always @(posedge clk) begin
             state <=IDLE;
         end else begin
             state <= next_state;
+            
             counter <= counter + 1;
         end
 end
 always @(*) begin
     case (state)
         IDLE: begin
-        counter =counter+1;
+           
         plain[0]=plaintext_in[127:0];
         plain[1]=plaintext_in[255:128];
         plain[2]=plaintext_in[383:256];
@@ -52,21 +55,34 @@ always @(*) begin
         plain[5]=plaintext_in[767:640];
         plain[6]=plaintext_in[895:768];
         plain[7]=plaintext_in[1024:896];
-       next_state <=ROUND1;
-    //    iv_temp=iv;
-    //    plaintext<=plain[0];
+     
+       
+       
+     
+        next_state <=ROUND1;
 
         end
 
         ROUND1: begin
-            counter =counter+1;
+            
             iv_temp=iv;
-            encryptedctr[0]=ciphertext;
-            next_state <=ROUND2;
-
-
+           
+            if (state==4'h1  && ciphertext) begin
+                encryptednonce[0]=ciphertext;
+                encryptedctr[0]=encryptednonce[0]^plain[0];
+                next_state <=ROUND2;
+            end
         end 
-       
+        ROUND2: begin
+            // counter =counter+1;
+            iv_temp=iv+1;
+          
+            // if (state==4'h2 && counter ==4'hE && ciphertext) begin
+                encryptednonce[1]=ciphertext;
+                encryptedctr[1]=encryptednonce[1]^plain[1];
+                // next_state <=ROUND3;
+            // end
+        end
     endcase
 end
 
