@@ -39,9 +39,9 @@ module ctrencryption_tb;
         #10 plaintext_in = 1024'h0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef;
             key = 256'h1f1e1d1c1b1a191817161514131211100f0e0d0c0b0a09080706050403020100;
             iv = 128'hffeeddccbbaa99887766554433221100;
-        #10;
-        plaintext_in=1024'h0;
-        iv=128'h0;
+        // #10;
+        // plaintext_in=1024'h0;
+        // iv=128'h0;
         // // Test Case 2: Larger input
         // #20 plaintext_in = 1024'hff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00;
         //     key = 256'hffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100;

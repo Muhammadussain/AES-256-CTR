@@ -56,26 +56,33 @@ always @(*) begin
         plain[6]=plaintext_in[895:768];
         plain[7]=plaintext_in[1024:896];
      
-       
-       
-     
-        next_state <=ROUND1;
+
+     if (iv) begin
+                            iv_temp=iv;
+                    next_state <=ROUND1;
+
+     end
+
+          
 
         end
 
         ROUND1: begin
-            
-            iv_temp=iv;
-           
+                   
+                // iv_temp=iv;
+            // if(counter >= 4'h3 &&state==1'b1)begin
+             iv_temp<=127'h0;
+
+            // end
             if (state==4'h1  && ciphertext) begin
                 encryptednonce[0]=ciphertext;
                 encryptedctr[0]=encryptednonce[0]^plain[0];
                 next_state <=ROUND2;
             end
-        end 
+        end     
         ROUND2: begin
             // counter =counter+1;
-            iv_temp=iv+1;
+            iv_temp=iv_temp+1;
           
             // if (state==4'h2 && counter ==4'hE && ciphertext) begin
                 encryptednonce[1]=ciphertext;
