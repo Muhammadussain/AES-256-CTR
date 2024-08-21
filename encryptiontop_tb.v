@@ -29,16 +29,16 @@ module encryptiontop_tb;
         // Apply reset
         #10 rst = 0;
  // Provide first plaintext after reset is deasserted
-        #20 plaintext = 128'hffeeddccbbaa99887766554433221100;
+        #20 plaintext = 128'hffeeddccbbaa99887766554433221102;
 
         // Clear plaintext after some delay to trigger state change
         #10 plaintext = 128'h00000000000000000000000000000000;
 
         // // Provide another plaintext after clearing it
-        #100 plaintext = 128'hffeeddccbbaa99887766554433221100;
+        // #100 plaintext = 128'hffeeddccbbaa99887766554433221100;
 
-        // // Clear plaintext again
-         #110 plaintext = 128'h00000000000000000000000000000000;
+        // // // Clear plaintext again
+        //  #110 plaintext = 128'h00000000000000000000000000000000;
         // // Wait for encryption to complete
         #3000;
 

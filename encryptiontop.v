@@ -9,6 +9,7 @@ module encryptiontop (
     input wire rst,
     input wire [127:0] plaintext,
     input wire [255:0] key_i,
+    output reg  cipher_counter_o,
     output reg [127:0] ciphertext
    
 );
@@ -23,6 +24,7 @@ module encryptiontop (
 
     reg [4:0] state, next_state; // Increased size to handle more states
     reg [4:0] new_counter; // Increased size to handle more states
+    reg [4:0] cipher_counter=5'h0; // Increased size to handle more states
     reg [3:0] rounds_counter ;
     localparam IDLE = 5'b00000;
     localparam INITIAL_ADD_ROUND_KEY = 5'b00001;
@@ -390,14 +392,24 @@ module encryptiontop (
                  if (sub_bytes_temp_out &&new_counter==5'h12) begin
                     temp = shift_rows_out;
                     temp2 = round15;
-                     ciphertext=out;
-                    next_state <= DONE;
+                    //  ciphertext=out;
+                    //  cipher_counter=cipher_counter+1;
+                     if(state==FINAL_ROUND)begin
+                                             cipher_counter_o=1'b1;
+                                                    //  ciphertext=out;
+
+                     end
+                    next_state = DONE;
+                                         ciphertext=out;
+
                       new_counter <= 5'h0;
                     
                 end
                          
 
             end
+            DONE:
+            cipher_counter_o<=1'h0;
                
         endcase
     end
