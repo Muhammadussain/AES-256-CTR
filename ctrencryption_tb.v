@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+
 
 module ctrencryption_tb;
     // Inputs
@@ -9,7 +9,7 @@ module ctrencryption_tb;
     reg rst;
 
     // Output
-    wire [1999:0] text;
+    wire [1023:0] text;
 
     // Instantiate the ctr_encryption module
     ctrencryption uut (
@@ -62,7 +62,7 @@ module ctrencryption_tb;
         //     iv = 128'hbeefbeefbeefbeefbeefbeefbeefbeef;
             
         // Finish simulation after some time
-        #12000 $finish;
+        #28000 $finish;
     end
 
     // Monitor output
