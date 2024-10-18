@@ -34,7 +34,7 @@ module tb_sbox;
        s_in =1'h0;
         
          //Finish simulation
-        #160;
+        #2000;
         $finish;
     end
 
